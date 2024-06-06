@@ -1,3 +1,5 @@
+sp_databases;
+
 -- Check the databases in sql server
 SELECT name, database_id, create_date
 FROM sys.databases;
@@ -53,7 +55,12 @@ WHERE (reclat > 90 OR reclat < -90)
 
 
 -- Generate new geography type column with the existing lat and long info
-ALTER TABLE LandingInfo ADD location geography;
+ALTER TABLE LandingInfo 
+DROP COLUMN IF EXISTS location;
+
+ALTER TABLE LandingInfo 
+ADD location geography;
+
 UPDATE LandingInfo
 SET location = geography::Point(reclat, reclong, 4326);
 
@@ -87,3 +94,8 @@ SELECT name, recclass, mass, year, AVG(mass) OVER (partition by recclass) as ave
 From MeteoriteMass
 order by averagemass;
 
+SELECT LandingInfo.name, LandingInfo.recclass, LandingInfo.fall,
+        LandingInfo.year, LandingInfo.location, LandingInfo.country,
+        LandingInfo.geolocation, LandingInfo.country1, MeteoriteMass.mass, MeteoriteMass.nametype
+FROM LandingInfo INNER JOIN MeteoriteMass 
+    ON LandingInfo.name = MeteoriteMass.name
