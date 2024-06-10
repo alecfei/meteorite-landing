@@ -45,7 +45,10 @@ FROM LandingInfo
 order by name, recclass;
 */
 
-ALTER TABLE LandingInfo
+ALTER TABLE MeteoriteLanding
+DROP COLUMN IF EXISTS country;
+
+ALTER TABLE MeteoriteLanding
 ADD country VARCHAR(256);
 
 -- Remove missing values or 0 values
@@ -65,30 +68,40 @@ WHERE (reclat > 90 OR reclat < -90)
 
 
 -- Generate new geography type column with the existing lat and long info
-ALTER TABLE LandingInfo 
+ALTER TABLE MeteoriteLanding
 DROP COLUMN IF EXISTS location;
 
-ALTER TABLE LandingInfo 
+ALTER TABLE MeteoriteLanding
 ADD location geography;
 
+SELECT * FROM MeteoriteLanding;
+
+UPDATE MeteoriteLanding
+SET location = geography::Point(reclat, reclong, 4326)
+WHERE (reclat <> 0) AND (reclong <> 0) AND (reclat >= -90) and (reclat <= 90) and (reclat IS NOT NULL) AND (reclong IS NOT NULL)
+;
+
+--SELECT location.STAsText() AS wkt_representation
+--FROM MeteoriteLanding;
+
+/* an alternative way of generating geographical column 
 UPDATE LandingInfo
-SET location = geography::Point(reclat, reclong, 4326);
+SET location = geography::STGeomFromText('POINT(' + CONVERT(VARCHAR(30), [reclong]) + ' ' + CONVERT(VARCHAR(30), [reclat]) + ')', 4326)
+WHERE (reclat <> 0) AND (reclong <> 0) AND (reclat >= -90) and (reclat <= 90) and (reclat IS NOT NULL) AND (reclong IS NOT NULL)
+;
+*/
 
-SELECT location.STAsText() AS wkt_representation
-FROM LandingInfo;
-
--- an alternative way of generating geographical column 
-UPDATE LandingInfo
-SET location = geography::STGeomFromText('POINT(' + CONVERT(VARCHAR(30), [reclong]) + ' ' + CONVERT(VARCHAR(30), [reclat]) + ')', 4326);
-
--- SELECT * FROM sys.spatial_reference_systems WHERE spatial_reference_id = 4326;
+SELECT * FROM sys.spatial_reference_systems WHERE spatial_reference_id = 4326;
 
 -- Populate the new country column with actual values
-SELECT name, recclass, location.ToString() as geostring, country
-From LandingInfo;
+SELECT name, year, fall, location.ToString() AS geostring, country
+FROM MeteoriteLanding
+ORDER BY name, year;
 
-Select * from WorldCountry -- This table was created after various effort, containing country name and its corresponding geographical info
-order by name;  
+USE Country;
+SELECT * FROM WorldCountries -- This table was created after various efforts, containing country name and its corresponding geographical info
+order by country
+;  
 
 UPDATE LandingInfo
 SET LandingInfo.country = WorldCountry.name
@@ -99,10 +112,11 @@ Select name, recclass, fall, year, country
 From LandingInfo
 order by country;
 
-
-SELECT name, recclass, mass, year, AVG(mass) OVER (partition by recclass) as averagemass
-From MeteoriteMass
-order by averagemass;
+-- check averagemass of each class
+SELECT name, recclass, [mass (g)], AVG([mass (g)]) OVER (PARTITION BY recclass) as averagemass
+FROM MeteoriteMass
+ORDER BY recclass, averagemass
+;
 
 SELECT LandingInfo.name, LandingInfo.recclass, LandingInfo.fall,
         LandingInfo.year, LandingInfo.location, LandingInfo.country,
