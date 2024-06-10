@@ -1,20 +1,29 @@
+-- two ways of checking databases in sql server
+
 sp_databases;
 
--- Check the databases in sql server
 SELECT name, database_id, create_date
 FROM sys.databases;
 
--- Check the tables in one of the databases
-USE PortfolioProject;
+-- go to the database needed to work on
+USE Meteorite;
+GO
 
-SELECT * 
-FROM MeteoriteMass
-order by 4, 6
+-- check tables
+SELECT * FROM MeteoriteInfo
+--order by 2, 3
+;
 
-SELECT * 
-FROM LandingInfo
-order by 3, 5
+SELECT * FROM MeteoriteMass
+--order by name
+;
 
+SELECT * FROM MeteoriteLanding
+order by name, year
+;
+
+
+/* Old script for future reference!! (ignore)
 -- Narrow down the data used
 SELECT name, recclass, year, mass
 FROM MeteoriteMass
@@ -34,6 +43,7 @@ ORDER BY 2, 4;
 SELECT *
 FROM LandingInfo
 order by name, recclass;
+*/
 
 ALTER TABLE LandingInfo
 ADD country VARCHAR(256);
