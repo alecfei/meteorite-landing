@@ -106,18 +106,24 @@ ON (CASE
 
 
 SELECT name, year, fall, location 
-	--, location.ToString() AS geostring
+	, location.ToString() AS geostring
 	, country
 FROM MeteoriteLanding
-ORDER BY name, year;
+-- WHERE country IS NOT NULL
+ORDER BY name, country;
 
 
 -- check averagemass of each class
+CREATE VIEW AverageMeteoriteMass AS
 SELECT id, name, recclass, [mass (g)], AVG([mass (g)]) OVER (PARTITION BY recclass) as averagemass
 FROM MeteoriteMass
+;
+
+SELECT * FROM AverageMeteoriteMass
 ORDER BY recclass, averagemass
 ;
 
+-- inner join
 SELECT MI.id, MI.name, MI.nametype, MI.recclass, MI.fall
 	, MM.[mass (g)]
 	, ML.year, ML.country, ML.geolocation, ML.location
