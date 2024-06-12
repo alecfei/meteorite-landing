@@ -119,8 +119,12 @@ FROM MeteoriteMass
 ORDER BY recclass, averagemass
 ;
 
-SELECT LandingInfo.name, LandingInfo.recclass, LandingInfo.fall,
-        LandingInfo.year, LandingInfo.location, LandingInfo.country,
-        LandingInfo.geolocation, LandingInfo.country1, MeteoriteMass.mass, MeteoriteMass.nametype
-FROM LandingInfo INNER JOIN MeteoriteMass 
-    ON LandingInfo.name = MeteoriteMass.name
+SELECT MI.id, MI.name, MI.nametype, MI.recclass, MI.fall
+	, MM.[mass (g)]
+	, ML.year, ML.country, ML.geolocation, ML.location
+	--, ML.country_nonadmin,
+FROM MeteoriteInfo AS MI 
+	INNER JOIN MeteoriteMass AS MM
+		ON MI.id = MM.id
+	INNER JOIN MeteoriteLanding AS ML
+		ON MI.id = ML.id
