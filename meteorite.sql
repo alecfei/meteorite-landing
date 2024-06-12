@@ -11,26 +11,25 @@ GO
 
 -- check tables
 SELECT * FROM MeteoriteInfo
---order by 2, 3
+--ORDER BY 2, 3
 ;
 
 SELECT * FROM MeteoriteMass
---order by name
+--ORDER BY name
 ;
 
 SELECT * FROM MeteoriteLanding
-order by name, year
+ORDER BY name, year
 ;
 
 
 /* Old script for future reference!! (ignore)
--- Narrow down the data used
+-- Narrow down the data
 SELECT name, recclass, year, mass
 FROM MeteoriteMass
-order by 2, 3;
+ORDER BY 2, 3;
 
 -- if adding one column based on other existing columns, we can do select (column 1/column 2)*100 as new_column_name
-
 
 -- Modify the table LandingInfo
 SELECT name, recclass, fall, year, reclat, reclong
@@ -42,7 +41,7 @@ ORDER BY 2, 4;
 
 SELECT *
 FROM LandingInfo
-order by name, recclass;
+ORDER BY name, recclass;
 */
 
 ALTER TABLE MeteoriteLanding
