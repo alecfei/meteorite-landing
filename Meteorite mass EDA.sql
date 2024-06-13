@@ -6,11 +6,12 @@ SELECT recclass
     , AVG([mass (g)]) AS [average mass]
     , MAX([mass (g)]) AS [maximum mass]
     , MIN([mass (g)]) AS [minimum mass]
+    , SUM([mass (g)]) AS [total mass]
 FROM MeteoriteMass
 GROUP BY recclass
 ORDER BY 
-   -- recclass
-    [average mass] DESC
+    recclass
+    --[average mass] DESC
 ;
 
 
@@ -45,3 +46,10 @@ GROUP BY recclass
 ORDER BY [minimum mass]
 ;
 */
+
+SELECT TOP 10 recclass
+    , AVG([mass (g)]) AS [average mass]
+FROM MeteoriteMass
+GROUP BY recclass
+ORDER BY [average mass] DESC
+;

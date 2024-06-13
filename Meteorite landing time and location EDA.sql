@@ -75,3 +75,109 @@ WITH LandingCounts AS (
 SELECT AVG(landing_count) AS [average landing counts]
 FROM LandingCounts
 ;
+
+-- look at the numbers of meteorite falls after year 2000
+SELECT year
+    , COUNT(name) AS [numbers of meteorite falls]
+FROM MeteoriteLanding
+WHERE year >= '2000-01-01'
+    AND fall = 'fell'
+GROUP BY year
+ORDER BY 
+    year
+    --[numbers of meteorite falls] DESC
+;
+
+-- check the top 5 year that has the most meteorite found and fall
+SELECT TOP 5 year
+    , COUNT(fall) AS [number_of_fell_meteorites]
+FROM MeteoriteLanding
+WHERE fall = 'Fell'
+GROUP BY year
+ORDER BY [number_of_fell_meteorites] DESC;
+
+SELECT year
+    , COUNT(fall) AS [number_of_found_meteorites]
+FROM MeteoriteLanding
+WHERE fall = 'Found'
+GROUP BY year
+ORDER BY [number_of_found_meteorites] DESC
+OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY; -- another way of fetch top numbers of rows
+
+
+/* two other ways of aggregation
+-- 1.
+WITH FellMeteorites AS (
+    SELECT
+        year,
+        'Fell' AS fall,
+        COUNT(fall) AS [number_of_meteorites],
+        ROW_NUMBER() OVER (ORDER BY COUNT(fall) DESC) AS rn
+    FROM
+        MeteoriteLanding
+    WHERE
+        fall = 'Fell'
+    GROUP BY
+        year
+),
+FoundMeteorites AS (
+    SELECT
+        year,
+        'Found' AS fall,
+        COUNT(fall) AS [number_of_meteorites],
+        ROW_NUMBER() OVER (ORDER BY COUNT(fall) DESC) AS rn
+    FROM
+        MeteoriteLanding
+    WHERE
+        fall = 'Found'
+    GROUP BY
+        year
+)
+SELECT
+    year,
+    fall,
+    [number_of_meteorites]
+FROM
+    FellMeteorites
+WHERE
+    rn <= 5
+
+UNION ALL
+
+SELECT
+    year,
+    fall,
+    [number_of_meteorites]
+FROM
+    FoundMeteorites
+WHERE
+    rn <= 5;
+
+
+-- 2.
+WITH RankedMeteorites AS (
+    SELECT
+        year,
+        fall,
+        COUNT(fall) AS [number_of_meteorites],
+        ROW_NUMBER() OVER (PARTITION BY fall ORDER BY COUNT(fall) DESC) AS rn
+    FROM
+        MeteoriteLanding
+    GROUP BY
+        year,
+        fall
+)
+SELECT
+    year,
+    fall,
+    [number_of_meteorites]
+FROM
+    RankedMeteorites
+WHERE
+    rn <= 5
+ORDER BY
+    fall,
+    [number_of_meteorites] DESC;
+*/
+
+-- think about combine the mass?
