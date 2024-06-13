@@ -191,7 +191,7 @@ FROM MeteoriteInfo
 GROUP BY recclass
 ORDER BY COUNT(*) DESC;
 
--- look at top ten countries the meteorites landed in
+-- look at top (ten) countries the meteorites landed in
 SELECT TOP 10 country
   , COUNT(*) AS [landing counts]
 FROM MeteoriteLanding
@@ -216,4 +216,16 @@ FROM MeteoriteInfo AS MI
 	INNER JOIN MeteoriteLanding AS ML
 		ON MI.id = ML.id
 WHERE ML.country = 'Ireland'
+;
+
+
+-- look at the average landing counts across all the countries
+WITH LandingCounts AS (
+    SELECT country, COUNT(*) AS landing_count
+    FROM MeteoriteLanding
+    WHERE country IS NOT NULL
+    GROUP BY country
+)
+SELECT AVG(landing_count) AS [average landing counts]
+FROM LandingCounts
 ;
