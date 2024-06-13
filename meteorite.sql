@@ -190,3 +190,30 @@ SELECT recclass
 FROM MeteoriteInfo
 GROUP BY recclass
 ORDER BY COUNT(*) DESC;
+
+-- look at top ten countries the meteorites landed in
+SELECT TOP 10 country
+  , COUNT(*) AS [landing counts]
+FROM MeteoriteLanding
+--WHERE country IS NOT NULL
+GROUP BY country
+ORDER BY COUNT(*) DESC;
+
+SELECT country_nonadmin
+  , COUNT(*) AS [landing counts]
+FROM MeteoriteLanding
+--WHERE country IS NOT NULL
+GROUP BY country_nonadmin
+ORDER BY COUNT(*) DESC;
+
+-- look at the details of meteorites that landed in Ireland
+SELECT MI.id, MI.name, MI.nametype, MI.recclass, MI.fall
+	, MM.[mass (g)]
+	, ML.year, ML.country, ML.geolocation
+FROM MeteoriteInfo AS MI 
+	INNER JOIN MeteoriteMass AS MM
+		ON MI.id = MM.id
+	INNER JOIN MeteoriteLanding AS ML
+		ON MI.id = ML.id
+WHERE ML.country = 'Ireland'
+;
