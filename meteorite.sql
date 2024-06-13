@@ -105,16 +105,37 @@ ON (CASE
       END).STIntersects(ML.location.MakeValid()) = 1;
 
 
+/*
+-- insert non-administrative country names
+ALTER TABLE MeteoriteLanding
+DROP COLUMN IF EXISTS country_nonadmin;
+
+ALTER TABLE MeteoriteLanding
+ADD country_nonadmin VARCHAR(256);
+
+UPDATE MeteoriteLanding
+SET country_nonadmin = WC.country
+FROM MeteoriteLanding AS ML
+JOIN Country.dbo.WorldCountries AS WC
+ON (CASE
+        WHEN WC.geom.MakeValid().STArea() > WC.geom.MakeValid().ReorientObject().STArea()
+            THEN WC.geom.MakeValid().ReorientObject()
+        ELSE WC.geom.MakeValid()
+      END).STIntersects(ML.location.MakeValid()) = 1;
+*/
+
+
 SELECT name, year, fall, location 
 	, location.ToString() AS geostring
 	, country
+	, country_nonadmin
 FROM MeteoriteLanding
 -- WHERE country IS NOT NULL
-ORDER BY name, country;
+ORDER BY country;
 
 
 -- check averagemass of each class
-CREATE VIEW AverageMeteoriteMass AS
+--CREATE VIEW AverageMeteoriteMass AS
 SELECT id, name, recclass, [mass (g)], AVG([mass (g)]) OVER (PARTITION BY recclass) as averagemass
 FROM MeteoriteMass
 ;
@@ -133,3 +154,34 @@ FROM MeteoriteInfo AS MI
 		ON MI.id = MM.id
 	INNER JOIN MeteoriteLanding AS ML
 		ON MI.id = ML.id
+
+
+-- count the country in MeteoriteLanding
+SELECT * FROM MeteoriteLanding
+WHERE country IS NOT NULL;
+
+SELECT * FROM MeteoriteLanding
+WHERE country_nonadmin IS NOT NULL
+AND country_nonadmin <> 'Antarctica';   --both retrieve 9822 rows
+
+SELECT COUNT(DISTINCT country) 
+AS distinct_country
+FROM MeteoriteLanding
+WHERE country IS NOT NULL;
+
+SELECT COUNT(*)
+FROM (
+  SELECT DISTINCT country, country_nonadmin
+  FROM MeteoriteLanding
+  WHERE country IS NOT NULL AND country_nonadmin IS NOT NULL
+) AS distinct_country_value;
+
+
+-- SELECT COUNT(DISTINCT 
+--               CASE 
+--                 WHEN country IS NULL THEN 'NULL' 
+--                 ELSE country 
+--               END) AS distinct_count
+-- FROM MeteoriteLanding;
+
+
