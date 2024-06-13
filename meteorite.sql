@@ -156,32 +156,37 @@ FROM MeteoriteInfo AS MI
 		ON MI.id = ML.id
 
 
--- count the country in MeteoriteLanding
+-- check the rows that has country value in MeteoriteLanding
 SELECT * FROM MeteoriteLanding
 WHERE country IS NOT NULL;
 
 SELECT * FROM MeteoriteLanding
 WHERE country_nonadmin IS NOT NULL
-AND country_nonadmin <> 'Antarctica';   --both retrieve 9822 rows
+AND country_nonadmin <> 'Antarctica';   --both retrieve 9822 rows!
 
+-- look at the numbers of countries that meteorite has landed in
 SELECT COUNT(DISTINCT country) 
 AS distinct_country
-FROM MeteoriteLanding
-WHERE country IS NOT NULL;
+FROM MeteoriteLanding         -- by default, DISTINCT doesn't count NULL values
 
-SELECT COUNT(*)
-FROM (
-  SELECT DISTINCT country, country_nonadmin
-  FROM MeteoriteLanding
-  WHERE country IS NOT NULL AND country_nonadmin IS NOT NULL
-) AS distinct_country_value;
+-- including null
+SELECT COUNT(DISTINCT 
+              CASE 
+                WHEN country IS NULL THEN 'NULL' 
+                ELSE country 
+              END) AS distinct_count
+FROM MeteoriteLanding;
 
+-- SELECT COUNT(*)
+-- FROM (
+--   SELECT DISTINCT country, country_nonadmin
+--   FROM MeteoriteLanding
+--   WHERE country IS NOT NULL AND country_nonadmin IS NOT NULL
+-- ) AS distinct_country_value;
 
--- SELECT COUNT(DISTINCT 
---               CASE 
---                 WHEN country IS NULL THEN 'NULL' 
---                 ELSE country 
---               END) AS distinct_count
--- FROM MeteoriteLanding;
-
-
+-- look at the numbers of recclasses of meteorites
+SELECT recclass
+  , COUNT(*) AS numberofrecclass
+FROM MeteoriteInfo
+GROUP BY recclass
+ORDER BY COUNT(*) DESC;
