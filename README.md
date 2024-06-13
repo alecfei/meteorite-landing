@@ -2,7 +2,7 @@
 
 - Data collection and preparation using **Python** in **Jupyter Notebook**
 - Exploratory Data Analysis using **MSSQL**
-- Data visualisation using **Tableau**, see at link below
+- Data visualisation using **Tableau**, see at link below (*still processing*)
 <p>https://public.tableau.com/views/MeteoriteLandingVisualisation/Sheet1?:language=en-US&:sid=&:display_count=n&:origin=viz_share_link</p>
 
 
