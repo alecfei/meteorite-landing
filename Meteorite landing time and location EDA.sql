@@ -180,4 +180,27 @@ ORDER BY
     [number_of_meteorites] DESC;
 */
 
--- think about combine the mass?
+-- look at the total mass of fell meteorite over the years in each country
+WITH sum_fell_meteorite AS (
+    SELECT YEAR(ML.year) AS year
+        , ML.fall AS fell
+        , ML.country AS country
+        , MM.[mass (g)] AS mass
+    FROM MeteoriteLanding AS ML
+        INNER JOIN MeteoriteMass AS MM
+        ON ML.id = MM.id
+    WHERE ML.fall = 'Fell'
+    --AND ML.country = 'China'
+    AND ML.country IS NOT NULL
+    AND MM.[mass (g)] IS NOT NULL
+)                                             -- CTE (Common Table Expression)
+SELECT year
+    , fell
+    , country
+    , SUM(mass) AS [total mass]
+FROM sum_fell_meteorite
+GROUP BY year
+    , fell
+    , country
+ORDER BY year DESC
+;
