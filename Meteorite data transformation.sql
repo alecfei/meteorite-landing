@@ -125,6 +125,7 @@ ON (CASE
 */
 
 
+-- check the populated values
 SELECT name, year, fall, location 
 	, location.ToString() AS geostring
 	, country
@@ -133,7 +134,7 @@ FROM MeteoriteLanding
 -- WHERE country IS NOT NULL
 ORDER BY country;
 
--- inner join
+-- inner join three tables
 SELECT MI.id, MI.name, MI.nametype, MI.recclass, MI.fall
 	, MM.[mass (g)]
 	, ML.year, ML.country, ML.geolocation, ML.location
@@ -143,3 +144,36 @@ FROM MeteoriteInfo AS MI
 		ON MI.id = MM.id
 	INNER JOIN MeteoriteLanding AS ML
 		ON MI.id = ML.id
+
+-- update continent and region info also for Tableau viz
+ALTER TABLE MeteoriteLanding
+DROP COLUMN IF EXISTS continent
+
+ALTER TABLE MeteoriteLanding
+ADD continent VARCHAR(256);
+
+ALTER TABLE MeteoriteLanding
+DROP COLUMN IF EXISTS region;
+
+ALTER TABLE MeteoriteLanding
+ADD region VARCHAR(256);
+
+/*
+IF EXISTS (SELECT * FROM sys.columns 
+           WHERE Name = N'continent' AND Object_ID = Object_ID(N'MeteoriteLanding'))
+BEGIN
+    ALTER TABLE MeteoriteLanding
+    DROP COLUMN continent;
+END
+*/
+
+UPDATE MeteoriteLanding
+SET region = AC.region
+	, continent = AC.continent
+FROM MeteoriteLanding AS ML
+JOIN Country.dbo.AdministrativeCountries AS AC
+ON (CASE
+        WHEN AC.geom.MakeValid().STArea() > AC.geom.MakeValid().ReorientObject().STArea()
+            THEN AC.geom.MakeValid().ReorientObject()
+        ELSE AC.geom.MakeValid()
+      END).STIntersects(ML.location.MakeValid()) = 1;
