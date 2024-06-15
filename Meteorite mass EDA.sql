@@ -1,7 +1,7 @@
 USE Meteorite;
 GO
 
--- the heaviest meteorite fell on earth
+-- the heaviest meteorite recorded on earth
 SELECT MM.id
     , MM.name
     , MM.recclass AS class

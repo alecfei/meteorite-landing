@@ -38,7 +38,7 @@ GROUP BY nametype
 ;
 
 SELECT fall
-    , COUNT(fall) AS [whether landing or not]
+    , COUNT(fall) AS [whether fell or not]
 FROM MeteoriteInfo
 GROUP BY fall
 --ORDER BY [whether landing or not]
