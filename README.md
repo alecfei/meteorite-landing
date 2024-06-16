@@ -3,7 +3,7 @@
 - Data collection and preparation using **Python** in **Jupyter Notebook**
 - Data transformation and EDA(Exploratory Data Analysis) using **SQL**
 - Data visualisation using **Tableau**, see at link below (*still processing*)
-<p>https://public.tableau.com/views/MeteoriteLandingVisualisation/Sheet1?:language=en-US&:sid=&:display_count=n&:origin=viz_share_link</p>
+<p>https://public.tableau.com/shared/2GTCH4NQK?:display_count=n&:origin=viz_share_link</p>
 
 
 #### References
