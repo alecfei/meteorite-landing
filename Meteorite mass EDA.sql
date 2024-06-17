@@ -1,22 +1,44 @@
 USE Meteorite;
 GO
 
--- the heaviest meteorite recorded on earth
-SELECT MM.id
-    , MM.name
-    , MM.recclass AS class
-    , MI.fall
-    , MI.nametype AS type
-    , YEAR(ML.year) AS year
-    , ML.country
-    , MM.[mass (g)]
-FROM MeteoriteMass AS MM
-    INNER JOIN MeteoriteInfo AS MI
-    ON MM.id = MI.id
-    INNER JOIN MeteoriteLanding AS ML
-    ON MM.id = ML.id
+-- the heaviest meteorite found and fell on earth
+WITH meteorite_mass AS (
+    SELECT MM.id
+        , MM.name
+        , MM.recclass AS class
+        , MI.fall
+        , MI.nametype AS type
+        , YEAR(ML.year) AS year
+        , ML.country
+        , MM.[mass (g)]
+    FROM MeteoriteMass AS MM
+        INNER JOIN MeteoriteInfo AS MI
+            ON MM.id = MI.id
+        INNER JOIN MeteoriteLanding AS ML
+            ON MM.id = ML.id
+)
+
+-- Query to find the heaviest meteorite that was found
+SELECT * FROM meteorite_mass
 WHERE 
-    MM.[mass (g)] = (SELECT MAX([mass (g)]) FROM MeteoriteMass)
+    [mass (g)] = (
+            SELECT MAX([mass (g)]) 
+            FROM meteorite_mass
+            WHERE fall = 'Found'
+        )
+    --AND fall = 'Found'
+
+UNION ALL
+
+-- Query to find the heaviest meteorite that fell
+SELECT * FROM meteorite_mass
+WHERE 
+    [mass (g)] = (
+            SELECT MAX([mass (g)]) 
+            FROM meteorite_mass
+            WHERE fall = 'Fell'
+        )
+    --AND fall = 'Fell'
 ;
 
 -- aggregate mass of each class
